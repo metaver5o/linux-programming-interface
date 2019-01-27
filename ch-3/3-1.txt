@@ -1,0 +1,44 @@
+When using the Linux-specific reboot() system call to reboot the system, the second argument, magic2,
+must be specified as one of a set of magic numbers (e.g., LINUX_REBOOT_MAGIC2). What is the significance
+of these numbers? (Converting them to hexadecimal provides a clue.)
+
+/include/uapi/linux/reboot.h:
+
+/*
+ * Magic values required to use _reboot() system call.
+ */
+
+#define	LINUX_REBOOT_MAGIC1	0xfee1dead
+#define	LINUX_REBOOT_MAGIC2	672274793
+#define	LINUX_REBOOT_MAGIC2A	85072278
+#define	LINUX_REBOOT_MAGIC2B	369367448
+#define	LINUX_REBOOT_MAGIC2C	537993216
+
+From kernel/reboot.c:
+
+/*
+ * Reboot system call: for obvious reasons only root may call it,
+ * and even root needs to set up some magic numbers in the registers
+ * so that some mistake won't make this reboot the whole machine.
+ * You can also set the meaning of the ctrl-alt-del-key here.
+ *
+ * reboot doesn't sync: do that yourself before calling this.
+ */
+SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
+		void __user *, arg)
+{
+	struct pid_namespace *pid_ns = task_active_pid_ns(current);
+	char buffer[256];
+	int ret = 0;
+
+	/* We only trust the superuser with rebooting the system. */
+	if (!ns_capable(pid_ns->user_ns, CAP_SYS_BOOT))
+		return -EPERM;
+
+	/* For safety, we require "magic" arguments. */
+	if (magic1 != LINUX_REBOOT_MAGIC1 ||
+			(magic2 != LINUX_REBOOT_MAGIC2 &&
+			magic2 != LINUX_REBOOT_MAGIC2A &&
+			magic2 != LINUX_REBOOT_MAGIC2B &&
+			magic2 != LINUX_REBOOT_MAGIC2C))
+		return -EINVAL;
