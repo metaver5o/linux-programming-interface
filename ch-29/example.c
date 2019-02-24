@@ -8,7 +8,7 @@ typedef struct thread_ret {
   int status;
 } thread_ret;
 
-static thread_ret* hello_world(void* args) {
+static void* hello_world(void* args) {
   (void)args;
   printf("Hello, multithreaded world!\n");
   thread_ret* tr = malloc(sizeof(thread_ret));
@@ -22,8 +22,8 @@ int main() {
   thread_ret* tr = NULL;
 
   for (int i = 0; i < COUNT - 1; i++) {
-    pthread_create(&thread_ids[i], &thread_attrs[i], hello_world, NULL);
-    printf("%d\n", tr->status);
+    pthread_create(&thread_ids[i], &thread_attrs[i], &hello_world, NULL);
+    // printf("%d\n", tr->status);
     free(tr);
   }
 
