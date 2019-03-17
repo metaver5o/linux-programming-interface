@@ -35,15 +35,16 @@ docker-clean:
 	-docker stop $(CONTAINER_NAME)
 	-docker rm $(CONTAINER_NAME)
 
-docker:
+image:
 	docker pull ubuntu
+	docker build . -t $(CONTAINER_NAME)
+
+docker:
 	docker run \
 	-dt \
 	--name $(CONTAINER_NAME) \
 	-v `pwd`:/$(CONTAINER_NAME) \
-	ubuntu
-	docker exec $(CONTAINER_NAME) apt-get update
-	docker exec $(CONTAINER_NAME) apt-get install -y make valgrind clang clang-tools cdecl perl
+	$(CONTAINER_NAME)
 
 shell:
 	docker exec -it $(CONTAINER_NAME) /bin/bash
