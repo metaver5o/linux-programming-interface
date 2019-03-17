@@ -7,6 +7,10 @@ RUN apt-get -qq install -y \
   clang-tools \
   lldb \
   make \
+  manpages \
+  manpages-dev \
+  manpages-posix \
+  manpages-posix-dev \
   perl \
   valgrind \
   vim \
