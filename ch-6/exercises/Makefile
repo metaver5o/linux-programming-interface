@@ -1,5 +1,5 @@
 include ../../Makefile
 
-wrong_write:
+6-3:
 	$(COMPILE) $@.c -o ../bin/$@
 	../bin/$@
