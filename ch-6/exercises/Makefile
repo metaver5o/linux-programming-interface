@@ -1,5 +1,7 @@
 include ../../Makefile
 
 6-3:
-	$(COMPILE) $@.c -o ../bin/$@
-	../bin/$@
+	reset
+	-rm ../../bin/$@
+	$(COMPILE) $@.c -o ../../bin/$@
+	../../bin/$@
