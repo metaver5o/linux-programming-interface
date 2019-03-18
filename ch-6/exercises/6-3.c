@@ -32,6 +32,7 @@ We have a couple of cases here:
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // #define STDIN 0
 // #define STDOUT 1
@@ -39,40 +40,41 @@ We have a couple of cases here:
 #define PRINT_ERROR_AND_QUIT(errno) \
   char *msg = strerror(errno);      \
   perror(msg);                      \
-  return -1;
+  exit(-1);
 
 extern char **environ;
 
 // j_setenv() - implement setenv() via putenv() and getenv()
-static int j_setenv(const char *name, const char *value, int overwrite) {
+static char *j_setenv(const char *const name, const char *const value,
+                      const int overwrite) {
+  char *nameval = NULL;
   // set variable if not currently set or we are overwriting
   if (getenv(name) == NULL || overwrite) {
-    const char *equals = "=";
+    const char *const equals = "=";
 
     // allocate memory for concatenated "name=val"
-    const char *nameval = malloc(strlen(name) + 1 + strlen(value) + 1);
+    nameval = malloc(strlen(name) + 1 + strlen(value) + 1);
     if (nameval == NULL) {
       PRINT_ERROR_AND_QUIT(ENOMEM);
     }
 
     // Loop through name, equals sign, and value strings and concatenate
-    char *stringp[3] = {name, equals, value};
-    for (int i = 0; i < 2; i++) {
-      char *string = stringp[i];
-      if (strcat(nameval, string) == -1) {
+    const char *const stringp[3] = {name, equals, value};
+    for (int i = 0; i < 3; i++) {
+      const char *const string = stringp[i];
+      if (strcat(nameval, string) == NULL) {
         free(nameval);
         PRINT_ERROR_AND_QUIT(errno);
       }
     }
-    if (putenv(nameval) == -1) {
+    printf("j_setenv() || setting: %s\n", nameval);
+    if (putenv(nameval) != 0) {
       free(nameval);
       PRINT_ERROR_AND_QUIT(errno);
     }
-
-    free(nameval);
   }
 
-  return 0;
+  return nameval;
 }
 
 // j_unsetenv(): delete matching keys from the environment's key/val pairs
@@ -100,7 +102,19 @@ static int j_unsetenv(const char *name) {
   return 0;
 }
 
+// Dumps entire environment
+static void show_env() {
+  for (int i = 0; environ[i] != NULL; i++) {
+    printf("%s\n", environ[i]);
+  }
+  printf("----------------------------------------------\n");
+}
+
 int main() {
-  printf("Environ address: %p\n", environ);
+  char *nameval = j_setenv("FOO", "BAR", 1);
+  show_env();
+  j_unsetenv("FOO");
+  free(nameval);
+  show_env();
   return 0;
 }
