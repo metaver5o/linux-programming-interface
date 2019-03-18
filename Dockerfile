@@ -1,5 +1,6 @@
 FROM ubuntu
 
+# Install useful C/C++ dev tools
 RUN apt-get update -qq
 RUN apt-get -qq install -y \
   cdecl \
@@ -18,6 +19,7 @@ RUN apt-get -qq install -y \
   vim \
   && rm -rf /var/lib/apt/lists/*
 
+# Set up man pages
 RUN cd /tmp && git clone http://git.kernel.org/pub/scm/docs/man-pages/man-pages
 RUN cd /tmp/man-pages && make install
 RUN mandb
