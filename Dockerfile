@@ -5,8 +5,10 @@ RUN apt-get -qq install -y \
   cdecl \
   clang \
   clang-tools \
+  git \
   lldb \
   make \
+  man \
   manpages \
   manpages-dev \
   manpages-posix \
@@ -15,3 +17,8 @@ RUN apt-get -qq install -y \
   valgrind \
   vim \
   && rm -rf /var/lib/apt/lists/*
+
+RUN cd /tmp && git clone http://git.kernel.org/pub/scm/docs/man-pages/man-pages
+RUN cd /tmp/man-pages && make install
+RUN mandb
+RUN rm -r /tmp/man-pages
