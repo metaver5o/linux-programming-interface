@@ -5,7 +5,11 @@ specifying a small allocation block size. This will demonstrate that malloc()
 doesn’t employ sbrk() to adjust the program break on each call, but instead
 periodically allocates larger chunks of memory from which it passes back small
 pieces to the caller.
- */
+---------------------------
+free_and_sbrk.c reproduced below. Moving the print statement inside the
+allocation loop confirms Mike's comment.
+*/
+
 /*************************************************************************\
 *                  Copyright (C) Michael Kerrisk, 2018.                   *
 *                                                                         *
@@ -59,10 +63,10 @@ int main(int argc, char *argv[]) {
   printf("Allocating %d*%d bytes\n", numAllocs, blockSize);
   for (j = 0; j < numAllocs; j++) {
     ptr[j] = malloc((size_t)blockSize);
+    printf("Program break is now:           %10p\n", sbrk(0));
+
     if (ptr[j] == NULL) errExit("malloc");
   }
-
-  printf("Program break is now:           %10p\n", sbrk(0));
 
   printf("Freeing blocks from %d to %d in steps of %d\n", freeMin, freeMax,
          freeStep);
