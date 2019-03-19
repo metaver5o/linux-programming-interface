@@ -30,15 +30,21 @@ update-source:
 	tar -xvzf tlpi-190116-dist.tar.gz
 	rm tlpi-190116-dist.tar.gz
 
-### Dockerized Linux workspace for consistent environment
+#############################################################
+### Dockerized Linux workspace for consistent environment ###
+#############################################################
+
+# Remove existing containers
 docker-clean:
 	-docker stop $(CONTAINER_NAME)
 	-docker rm $(CONTAINER_NAME)
 
+# Build image from Dockerfile
 image:
 	docker pull ubuntu
 	docker build . -t $(CONTAINER_NAME)
 
+# Start running container from built image
 docker:
 	docker run \
 	-dt \
@@ -46,9 +52,11 @@ docker:
 	-v `pwd`:/$(CONTAINER_NAME) \
 	$(CONTAINER_NAME)
 
+# Create running shell session inside container
 shell:
 	docker exec -it $(CONTAINER_NAME) /bin/bash
 
-workspace: docker-clean docker shell
+# All-in-one command to build and start workspace.
+workspace: docker-clean image docker shell
 
 
