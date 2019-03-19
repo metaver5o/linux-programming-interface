@@ -1,6 +1,6 @@
 # linux-programming-interface
 Reading notes from Kerrisk's "The Linux Programming Interface" for the
-[Bradfield School of Computer Science reading group]() based on the text.
+[Bradfield School of Computer Science reading group](https://twitter.com/JessicaGreben/status/1089685648066265088) based on the text.
 
 ## Dockerized workspace
 This repo comes with a Dockerized workspace so I (and others) can on exercises
